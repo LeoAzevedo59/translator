@@ -1,43 +1,26 @@
 from moviepy.editor import VideoFileClip
-import speech_recognition as sr
-import os
 
-def extract_audio(video_file, output_audio_file):
-    """Extrai o áudio de um arquivo de vídeo e o salva como .wav"""
-    print("Extraindo o áudio do vídeo...")
-    video = VideoFileClip(video_file)
-    video.audio.write_audiofile(output_audio_file)
-    print(f"Áudio salvo em: {output_audio_file}")
+def extract_audio(video_path, output_audio_path):
+    try:
+        # Carrega o arquivo de vídeo
+        video = VideoFileClip(video_path)
+        
+        # Extrai o áudio
+        audio = video.audio
+        
+        # Salva o áudio em um arquivo .mp3
+        audio.write_audiofile(output_audio_path)
+        
+        # Libera os recursos
+        audio.close()
+        video.close()
+        print(f"Áudio extraído com sucesso e salvo em: {output_audio_path}")
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
 
-def transcribe_audio(audio_file):
-    """Transcreve o áudio usando SpeechRecognition"""
-    print("Transcrevendo o áudio...")
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_file) as source:
-        audio_data = recognizer.record(source)
-        try:
-            text = recognizer.recognize_google(audio_data, language="en-US")
-            print("Transcrição concluída!")
-            return text
-        except sr.UnknownValueError:
-            return "Não foi possível entender o áudio."
-        except sr.RequestError as e:
-            return f"Erro na API de reconhecimento de fala: {e}"
+# Caminhos dos arquivos
+video_file = "video.mp4"
+output_audio_file = "audio.mp3"
 
-def main():
-    video_file = "video.mp4"  # Substitua pelo caminho do seu vídeo
-    audio_file = "audio.wav"
-
-    # Extrair o áudio do vídeo
-    extract_audio(video_file, audio_file)
-
-    # Transcrever o áudio
-    transcription = transcribe_audio(audio_file)
-    print("\nTranscrição do áudio:")
-    print(transcription)
-
-    # Remover o arquivo de áudio temporário
-    os.remove(audio_file)
-
-if __name__ == "__main__":
-    main()
+# Chama a função
+extract_audio(video_file, output_audio_file)
